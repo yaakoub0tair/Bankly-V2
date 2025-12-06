@@ -42,4 +42,23 @@ CREATE TABLE IF NOT EXISTS transactions(
     );
 
 
+INSERT INTO clients (full_name, email, cin, telephone, adress) VALUES
+('Ahmed El Fassi', 'ahmed.fassi@mail.com', 'CIN123456', '0600000001', 'Rue A, Casablanca'),
+('Fatima Zahra', 'fatima.zahra@mail.com', 'CIN654321', '0600000002', 'Rue B, Rabat');
+
+INSERT INTO users (username, password, role) VALUES
+('admin', MD5('admin123'), 'admin'),
+('agent1', MD5('agent123'), 'agent');
+
+INSERT INTO accounts (client_id, account_number, type, status, balance) VALUES
+(1, 'ACC1001', 'courant', 'actif', 1000.00),
+(2, 'ACC1002', 'epargne', 'actif', 5000.00);
+
+
+INSERT INTO transactions (account_id, user_id, type, amount, balance_before, balance_after, description) VALUES
+(1, 2, 'depot', 500.00, 1000.00, 1500.00, 'Dépôt initial'),
+(2, 2, 'retrait', 1000.00, 5000.00, 4000.00, 'Retrait urgent');
+  
+
+
 
