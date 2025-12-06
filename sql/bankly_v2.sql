@@ -15,5 +15,16 @@ CREATE TABLE IF NOT EXISTS users(
    password VARCHAR(255) NOT NULL,
    role ENUM('admin', 'agent') NOT NULL,
    created_at datetime DEFAULT CURRENT_TIMESTAMP
-) 
+); 
+CREATE TABLE IF NOT EXISTS accounts(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    account_number VARCHAR(50) UNIQUE NOT NULL,
+    type ENUM('courant', 'epargne') NOT NULL,
+    status ENUM('actif', 'suspendu','ferme') NOT NULL,
+    balance DECIMAL(15,2) NOT NULL DEFAULT 0.0,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
 
