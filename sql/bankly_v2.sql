@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS bankly_v2;
+USE DATABASE bankly_v2;
+
+
