@@ -26,5 +26,20 @@ CREATE TABLE IF NOT EXISTS accounts(
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS transactions(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    user_id INT DEFAULT NULL,
+    type ENUM('depot', 'retrait') NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    balance_before DECIMAL(15,2) NOT NULL,
+    balance_after DECIMAL(15,2) NOT NULL,
+    description text,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+
+    );
+
 
 
