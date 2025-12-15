@@ -1,6 +1,4 @@
-Ton fichier est déjà bon pour « liste + modifier ». Voici la version complète avec aussi le lien « Supprimer » prêt à l’emploi.
 
-```php
 <?php
 require_once __DIR__ . '/../includes/session_check.php';
 require_once __DIR__ . '/../config/db.php';
