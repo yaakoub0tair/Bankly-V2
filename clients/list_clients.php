@@ -1,3 +1,6 @@
+Ton fichier est déjà bon pour « liste + modifier ». Voici la version complète avec aussi le lien « Supprimer » prêt à l’emploi.
+
+```php
 <?php
 require_once __DIR__ . '/../includes/session_check.php';
 require_once __DIR__ . '/../config/db.php';
@@ -43,6 +46,7 @@ $clients = $result->fetchAll();
                     <th>Téléphone</th>
                     <th>Adresse</th>
                     <th>Créé le</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +59,14 @@ $clients = $result->fetchAll();
                         <td><?php echo htmlspecialchars($c['telephone']); ?></td>
                         <td><?php echo htmlspecialchars($c['adress']); ?></td>
                         <td><?php echo htmlspecialchars($c['created_at']); ?></td>
+                        <td>
+                            <a href="edit_client.php?id=<?php echo $c['id']; ?>">Modifier</a>
+                            |
+                            <a href="delete_client.php?id=<?php echo $c['id']; ?>"
+                               onclick="return confirm('Supprimer ce client ?');">
+                                Supprimer
+                            </a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
