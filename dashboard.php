@@ -47,7 +47,8 @@ $nb_transactions = $pdo->query("SELECT COUNT(*) AS c FROM transactions")->fetch(
         <div class="links-grid">
             <a href="clients/list_clients.php" class="link-card">Gérer les clients</a>
             <a href="accounts/list_accounts.php" class="link-card">Gérer les comptes</a>
-            <a href="transactions/make_transaction.php" class="link-card">Faire une transaction</a>
+            <a href="transactions/make_transaction.php?account_id=2" class="link-card"> Faire une transaction</a>
+
             <a href="transactions/list_transactions.php" class="link-card">Historique des transactions</a>
         </div>
     </main>
