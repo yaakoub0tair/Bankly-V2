@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':status'         => $status,
             ':balance'        => $balance,
         ]);
-        header('Location: list_accounts.php');
+        header('Location: list_accounts.php?success=added');
         exit();
     }
 }
@@ -45,70 +45,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un compte - Bankly V2</title>
-    <link rel="stylesheet" href="../public/css/dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- [web:23] -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- [web:26] -->
 </head>
-<body>
-<div class="topbar">
-    <div class="left">
-        <strong>Bankly V2</strong> – Ajouter un compte
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="list_accounts.php">
+            <i class="fas fa-arrow-left"></i> Comptes
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <small class="text-white">
+                <?= htmlspecialchars($username) ?> (<?= htmlspecialchars($role) ?>)
+            </small>
+            <a href="../auth/logout.php" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </div>
-    <div class="right">
-        <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)
-        | <a href="list_accounts.php">Retour</a>
-        | <a href="../logout.php">Se déconnecter</a>
+</nav>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 m-0">
+                    <i class="fas fa-credit-card text-primary"></i>
+                    Ajouter un compte
+                </h1>
+                <a href="list_accounts.php" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-list"></i> Liste des comptes
+                </a>
+            </div>
+
+            <?php if (!empty($errors)): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-triangle-exclamation"></i> Erreurs :
+                    </h6>
+                    <ul class="mb-0">
+                        <?php foreach ($errors as $e): ?>
+                            <li><?= htmlspecialchars($e) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" novalidate>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user text-primary"></i> Client *
+                            </label>
+                            <select name="client_id" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                <?php foreach ($clients as $c): ?>
+                                    <option value="<?= $c['id'] ?>"
+                                        <?= ($client_id == $c['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($c['full_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-hashtag text-primary"></i> Numéro de compte *
+                            </label>
+                            <input type="text"
+                                   name="account_number"
+                                   class="form-control"
+                                   value="<?= htmlspecialchars($account_number) ?>"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-layer-group text-primary"></i> Type
+                            </label>
+                            <select name="type" class="form-select">
+                                <option value="courant" <?= $type === 'courant' ? 'selected' : '' ?>>Courant</option>
+                                <option value="epargne" <?= $type === 'epargne' ? 'selected' : '' ?>>Épargne</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-toggle-on text-primary"></i> Statut
+                            </label>
+                            <select name="status" class="form-select">
+                                <option value="actif" <?= $status === 'actif' ? 'selected' : '' ?>>Actif</option>
+                                <option value="suspendu" <?= $status === 'suspendu' ? 'selected' : '' ?>>Suspendu</option>
+                                <option value="ferme" <?= $status === 'ferme' ? 'selected' : '' ?>>Fermé</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-coins text-primary"></i> Solde initial
+                            </label>
+                            <input type="number"
+                                   step="0.01"
+                                   name="balance"
+                                   class="form-control"
+                                   value="<?= htmlspecialchars($balance) ?>">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                            <a href="list_accounts.php" class="btn btn-outline-secondary">
+                                Annuler
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-muted small mt-3">
+                Les champs marqués d'un * sont obligatoires.
+            </p>
+        </div>
     </div>
 </div>
 
-<main>
-    <h1>Ajouter un compte</h1>
-
-    <?php if (!empty($errors)): ?>
-        <div class="alert-error">
-            <?php foreach ($errors as $e): ?><p><?php echo htmlspecialchars($e); ?></p><?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <form method="post" class="form-basic">
-        <label>Client*
-            <select name="client_id">
-                <option value="">-- Choisir --</option>
-                <?php foreach ($clients as $c): ?>
-                    <option value="<?php echo $c['id']; ?>"
-                        <?php if ($client_id == $c['id']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($c['full_name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </label>
-
-        <label>Numéro de compte*
-            <input type="text" name="account_number"
-                   value="<?php echo htmlspecialchars($account_number); ?>">
-        </label>
-
-        <label>Type
-            <select name="type">
-                <option value="courant" <?php if ($type === 'courant') echo 'selected'; ?>>Courant</option>
-                <option value="epargne" <?php if ($type === 'epargne') echo 'selected'; ?>>Épargne</option>
-            </select>
-        </label>
-
-        <label>Statut
-            <select name="status">
-                <option value="actif" <?php if ($status === 'actif') echo 'selected'; ?>>Actif</option>
-                <option value="suspendu" <?php if ($status === 'suspendu') echo 'selected'; ?>>Suspendu</option>
-                <option value="ferme" <?php if ($status === 'ferme') echo 'selected'; ?>>Fermé</option>
-            </select>
-        </label>
-
-        <label>Solde initial
-            <input type="number" step="0.01" name="balance"
-                   value="<?php echo htmlspecialchars($balance); ?>">
-        </label>
-
-        <button type="submit" class="btn-primary">Enregistrer</button>
-    </form>
-</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <!-- [web:23] -->
 </body>
 </html>
