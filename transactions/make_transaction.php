@@ -9,7 +9,7 @@ $errors = [];
 $account_id = isset($_GET['account_id']) ? (int) $_GET['account_id'] : 0;
 
 if ($account_id <= 0) {
-    header('Location: ../dashboard.php');
+    header('Location: ../accounts/list_accounts.php');
     exit();
 }
 
@@ -22,7 +22,7 @@ $stmt->execute([':id' => $account_id]);
 $account = $stmt->fetch();
 
 if (!$account) {
-    header('Location: ../dashboard.php');
+    header('Location: ../accounts/list_accounts.php');
     exit();
 }
 
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="right">
         <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)
         &nbsp;|&nbsp;
-        <a href="../dashboard.php">Dashboard</a>
+        <a href="../accounts/list_accounts.php">Retour</a>
         &nbsp;|&nbsp;
         <a href="../logout.php">Se déconnecter</a>
     </div>
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <main>
     <h1>Transaction sur le compte <?php echo htmlspecialchars($account['account_number']); ?></h1>
     <p>Client : <?php echo htmlspecialchars($account['full_name']); ?></p>
-    <p>Solde actuel : <?php echo htmlspecialchars($account['balance']); ?></p>
+    <p>Solde actuel : <?php echo htmlspecialchars(number_format($account['balance'], 2, '.', ' ')); ?></p>
 
     <?php if (!empty($errors)): ?>
         <div class="alert-error">
