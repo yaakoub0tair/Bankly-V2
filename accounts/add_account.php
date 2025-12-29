@@ -4,40 +4,61 @@ require_once __DIR__ . '/../config/db.php';
 
 $errors = [];
 
-// Clients pour le select
-$clients_stmt = $pdo->query("SELECT id, full_name FROM clients ORDER BY full_name");
-$clients = $clients_stmt->fetchAll();
 
-$client_id      = '';
+$clients = $pdo->query("
+    SELECT id, full_name 
+    FROM clients 
+    ORDER BY full_name
+")->fetchAll();
+
+
+$client_id = 0;
 $account_number = '';
-$type           = 'courant';
-$status         = 'actif';
-$balance        = '0.00';
+$type = 'courant';
+$status = 'actif';
+$balance = '0.00';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+   
     $client_id      = (int)($_POST['client_id'] ?? 0);
     $account_number = trim($_POST['account_number'] ?? '');
-    $type           = $_POST['type']   ?? 'courant';
+    $type           = $_POST['type'] ?? 'courant';
     $status         = $_POST['status'] ?? 'actif';
     $balance        = trim($_POST['balance'] ?? '0');
 
-    if ($client_id <= 0) $errors[] = "Client obligatoire.";
-    if ($account_number === '') $errors[] = "Numéro de compte obligatoire.";
-    if ($balance === '' || !is_numeric($balance)) $errors[] = "Solde initial invalide.";
+  
+    if ($client_id <= 0) {
+        $errors[] = "Client obligatoire.";
+    }
 
+    if ($account_number === '') {
+        $errors[] = "Numéro de compte obligatoire.";
+    }
+
+    if (!is_numeric($balance)) {
+        $errors[] = "Solde invalide.";
+    }
+
+   
     if (empty($errors)) {
-        $sql = "INSERT INTO accounts (client_id, account_number, type, status, balance, created_at)
-                VALUES (:client_id, :account_number, :type, :status, :balance, NOW())";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $pdo->prepare("
+            INSERT INTO accounts 
+            (client_id, account_number, type, status, balance, created_at)
+            VALUES (?, ?, ?, ?, ?, NOW())
+        ");
+
         $stmt->execute([
-            ':client_id'      => $client_id,
-            ':account_number' => $account_number,
-            ':type'           => $type,
-            ':status'         => $status,
-            ':balance'        => $balance,
+            $client_id,
+            $account_number,
+            $type,
+            $status,
+            $balance
         ]);
-        header('Location: list_accounts.php?success=added');
-        exit();
+
+        header('Location: list_accounts.php?success=1');
+        exit;
     }
 }
 ?>
@@ -47,9 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un compte - Bankly V2</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- [web:23] -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- [web:26] -->
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
 </head>
 <body class="bg-light">
 

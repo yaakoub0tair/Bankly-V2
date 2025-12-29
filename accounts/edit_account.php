@@ -3,21 +3,24 @@ require_once __DIR__ . '/../includes/session_check.php';
 require_once __DIR__ . '/../config/db.php';
 
 $errors = [];
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+$id = 0;
+if (isset($_GET['id'])) {
+    $id = (int) $_GET['id'];
+}
 
 if ($id <= 0) {
     header('Location: list_accounts.php');
-    exit();
+    exit;
 }
 
-$sql = "SELECT * FROM accounts WHERE id = :id";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':id' => $id]);
+$stmt = $pdo->prepare("SELECT * FROM accounts WHERE id = ?");
+$stmt->execute([$id]);
 $account = $stmt->fetch();
 
 if (!$account) {
     header('Location: list_accounts.php');
-    exit();
+    exit;
 }
 
 $account_number = $account['account_number'];
@@ -26,6 +29,7 @@ $status         = $account['status'];
 $balance        = $account['balance'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $account_number = trim($_POST['account_number'] ?? '');
     $type           = trim($_POST['type'] ?? '');
     $status         = trim($_POST['status'] ?? '');
@@ -34,32 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($account_number === '') $errors[] = "Le numéro de compte est obligatoire.";
     if ($type === '')           $errors[] = "Le type est obligatoire.";
     if ($status === '')         $errors[] = "Le statut est obligatoire.";
-    if ($balance === '' || !is_numeric($balance)) {
-        $errors[] = "Le solde doit être un nombre.";
-    }
+    if ($balance === '' || !is_numeric($balance)) $errors[] = "Le solde doit être un nombre.";
 
     if (empty($errors)) {
-        $sql = "UPDATE accounts
-                SET account_number = :account_number,
-                    type           = :type,
-                    status         = :status,
-                    balance        = :balance
-                WHERE id = :id";
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':account_number' => $account_number,
-            ':type'           => $type,
-            ':status'         => $status,
-            ':balance'        => $balance,
-            ':id'             => $id,
-        ]);
+        $stmt = $pdo->prepare("
+            UPDATE accounts
+            SET account_number = ?, type = ?, status = ?, balance = ?
+            WHERE id = ?
+        ");
+        $stmt->execute([$account_number, $type, $status, $balance, $id]);
 
         header('Location: list_accounts.php?success=updated');
-        exit();
+        exit;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
